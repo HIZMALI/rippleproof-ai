@@ -1,4 +1,4 @@
-# FalkorDB graph design — version 0.3
+# FalkorDB graph model
 
 Use FalkorDB as the sole canonical domain datastore.
 Use parameterized Cypher and stable IDs. Avoid hardcoding demo answers.

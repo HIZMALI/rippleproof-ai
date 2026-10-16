@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { ScenarioResponseSchema } from "../src/api/contracts";
 
 test("actual Docker backend stop/start: no stale success, recovery and source persistence", async ({
@@ -65,8 +65,12 @@ test("actual Docker backend stop/start: no stale success, recovery and source pe
   const after = await (await page.request.get("/api/graph/summary")).json();
   expect(after).toEqual(before);
   expect(second).toEqual(first);
+  await mkdir(
+    process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/browser",
+    { recursive: true },
+  );
   await writeFile(
-    `${process.env.EVIDENCE_DIRECTORY ?? "../docs/verification/phase4"}/production-restart.json`,
+    `${process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/browser"}/production-restart.json`,
     JSON.stringify(
       {
         services:

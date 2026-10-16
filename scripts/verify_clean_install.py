@@ -213,7 +213,7 @@ def main():
     public = {k: v for k, v in proof.items() if k != "tested_source_files"}
     for key in ("api_origin", "web_origin"):
         public[key] += " (local verification only)"
-    target = ROOT / "docs/verification/phase5a/clean-install.json"
+    target = folder / "summary.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(public, indent=2), encoding="utf-8")
     print(json.dumps(public, indent=2))

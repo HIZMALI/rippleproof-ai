@@ -1,7 +1,7 @@
 """Offline documented-contract check and clearly labeled mocked metadata example.
 
 No key lookup, default HTTP transport, graph connection or acceptance run.
-Writes new artifacts exclusively. See PHASE5B1_VERIFICATION for official sources.
+Writes new artifacts exclusively. See docs/SECURITY.md for provider evidence categories.
 """
 
 import argparse

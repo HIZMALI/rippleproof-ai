@@ -3,7 +3,7 @@ import { chromium, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 
 const directory =
-  process.env.EVIDENCE_DIRECTORY ?? "../docs/verification/phase4";
+  process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/browser";
 const origin = process.env.WEB_ORIGIN ?? "http://127.0.0.1:18080";
 const browser = await chromium.launch();
 const errors = [];
