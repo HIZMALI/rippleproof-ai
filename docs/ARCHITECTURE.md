@@ -7,7 +7,7 @@ the browser nor a model can author authoritative quantities, prices or complianc
 ## Request and data boundaries
 
 ```mermaid
-flowchart LR
+flowchart TB
     Browser[React workspace] --> Proxy[Unprivileged Nginx]
     Proxy --> API[FastAPI and Pydantic]
     API --> Simulation[Deterministic engine]
