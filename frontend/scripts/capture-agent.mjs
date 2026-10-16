@@ -3,7 +3,8 @@ import { chromium, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 
-const folder = "../docs/verification/phase5a/agent-layouts";
+const folder =
+  process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/agent-layouts";
 const browser = await chromium.launch();
 const results = [];
 const agentRequests = [];

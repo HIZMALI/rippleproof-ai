@@ -29,7 +29,6 @@ DENIED = {
     "backups",
 }
 ROOT_FILES = {
-    "AGENTS.md",
     "README.md",
     "RIGHTS.md",
     "THIRD_PARTY_NOTICES.md",
@@ -90,8 +89,6 @@ def selected(path):
     top = relative.parts[0]
     if top in {"rippleproof", "tests"}:
         return path.suffix == ".py"
-    if top == "tasks":
-        return path.suffix == ".md"
     if top == "scripts":
         return len(relative.parts) == 2 and path.name in SCRIPT_FILES
     if top == "frontend":
@@ -104,10 +101,9 @@ def selected(path):
         return (
             path.suffix == ".md"
             or relative.parts[1] == "notices"
-            or len(relative.parts) >= 4
-            and relative.parts[1] == "verification"
-            and relative.parts[2] in {"phase4", "phase5a", "phase5b1"}
-            and (path.suffix in {".json", ".png"} or path.name == "checks-sanitized.txt")
+            or len(relative.parts) >= 3
+            and relative.parts[1] == "images"
+            and path.suffix == ".png"
             and path.stat().st_size < 500_000
         )
     return False
@@ -181,9 +177,6 @@ def normalized_document(text, relative):
     # Workstation names/paths are irrelevant to judges. Only export copies change.
     text = text.replace(str(ROOT), "<repository>").replace(ROOT.as_posix(), "<repository>")
     text = re.sub(r"[A-Za-z]:[\\/]Users[\\/][^\s`<>)\"']+", "<local-path>", text)
-    text = text.replace(
-        "(docs/verification/phase2-demo-response.json)", "(docs/CYPHER_AND_EVIDENCE.md)"
-    )
 
     # Old execution archives stay private; do not ship dangling historical links.
     def link(match):
@@ -264,7 +257,7 @@ def export(destination, *, phase="phase5a"):
         "secret_matches": 0,
         "known_private_values_checked": len(secrets),
         "history": history,
-        "license": "All Rights Reserved; no project LICENSE; holder not invented",
+        "license": "All Rights Reserved; no project LICENSE; see RIGHTS.md",
         "export_only_document_sanitization": changed_docs,
         "files": manifest,
     }

@@ -1,126 +1,128 @@
 # RippleProof AI
 
-An explainable supply-chain disruption agent for **Graph Hacks 2026, Track 1:
-Agents That Act on Connected Data**. Team MORVE; one human participant.
+**Explain supplier outages, compare feasible recovery plans, and trace every
+recommendation to connected evidence in FalkorDB.**
 
-When a supplier stops shipping, dependency lists cannot tell a planner which
-orders still have enough material. RippleProof traverses FalkorDB, allocates
-shared stock and receipts once, checks suppliers on arrival dates, and compares
-explainable recovery plans. An optional bounded agent selects real MCP tools;
-a human alone can authorize an internal decision record.
+Built by **MORVE** for **Graph Hacks 2026 — Track 1: Agents That Act on Connected Data**.
 
-**Local release candidate; publication pending.** No API key is needed to explore.
-Guided MCP is a deterministic walkthrough with zero remote LLM calls.
-The bounded real-provider agent and redacted telemetry are implemented;
-**real remote LLM acceptance has not been performed**. See
-[executed Phase 5B-1 verification](docs/PHASE5B1_VERIFICATION.md),
-[release gates](docs/PHASE5_RELEASE_GATES.md) and the
-[publication checklist](docs/PUBLICATION_CHECKLIST.md).
+### [Watch the three-minute demonstration](https://youtu.be/ttOWMdWxIPU)
 
-Prepared for the owner's intended repository `hizmali/rippleproof-ai`.
-Copyright © 2026 Mert Hızmalı. All rights reserved. See [RIGHTS.md](RIGHTS.md).
-Public visibility, repository creation, commits, pushing, video upload and
-competition submission still require separate authorization. Older phase reports
-record the state at execution time; current rights and release gates are here.
+The authentic, silent English-captioned demo uses a synthetic supply chain and
+genuine MCP tools. **Guided MCP follows a deterministic sequence with zero remote
+LLM calls. Real remote LLM acceptance has not been verified.**
 
-## Run in three steps
+## From an outage to an explainable decision
 
-Prerequisites: Docker Desktop (Linux containers) or Docker Engine with Compose v2.
-Run at the repository root. These commands work in PowerShell and POSIX shells.
+An operations planner needs to know which orders lose material coverage when a
+supplier stops shipping, which alternatives qualify, and what recovery costs.
+RippleProof connects suppliers, parts, bills of materials, orders, inventory,
+inbound shipments and dated certifications, then computes the consequences.
 
-1. Start the production frontend, API and graph:
+| Capability | What the application does |
+| --- | --- |
+| Trace dependencies | Return actual supplier → part ← product ← order paths and source properties |
+| Simulate disruption | Calculate complete order requirements and allocate shared inventory and receipts once |
+| Evaluate suppliers | Enforce lead times, booked daily capacity and every required certificate on arrival |
+| Compare recovery | Show baseline, disrupted and mitigated coverage with Decimal procurement costs |
+| Inspect MCP execution | Display real SDK stdio tool calls, arguments, evidence and output hashes |
+| Retain reviewed decisions | Recalculate a preview, require explicit human approval, and store linked Decision/Evidence in FalkorDB |
 
-   ```sh
-   docker compose up --build -d --wait
-   ```
+<details>
+<summary>View the working application</summary>
 
-2. **Fresh empty demo graph only:** create the synthetic base and add receipts:
+![Actual synthetic scenario and graph evidence in the RippleProof workbench](docs/images/workbench.png)
 
-   ```sh
-   docker compose exec backend python -m rippleproof.seed
-   docker compose exec backend python -m rippleproof.migrate
-   ```
+An authentic local application capture; results are calculated from FalkorDB.
 
-   **Existing Phase 2/3/4 graph:** skip both commands. Starting services needs no
-   reseed. The base seed restores fixture properties; never use it to upgrade an
-   edited live graph. The additive migration is explicit, preserves existing
-   properties, and is needed only when upgrading a Phase 1 graph.
+</details>
 
-3. Open the local [workspace](http://127.0.0.1:18080/#/overview), then Scenario
-   Workbench. Click **Run scenario**. API docs: local
-   [OpenAPI explorer](http://127.0.0.1:18000/docs).
+## Why FalkorDB is essential
 
-These localhost links work only while your containers run. No public deployment
-is provided. Default host ports: frontend 18080, API 18000, database 6379, all
-bound to 127.0.0.1. Change `WEB_PORT`, `API_PORT`, or `FALKORDB_PORT` if occupied.
-Optional configuration without replacing an existing file:
+FalkorDB is the canonical store for operational facts and decision memory.
+Reviewed, parameterized Cypher returns coherent facts and multi-hop evidence.
+The deterministic Python engine computes quantities, timing, eligibility and
+cost; an optional bounded agent selects constrained tools. Removing the graph
+causes explicit failures. There is no parallel knowledge database or fixture
+fallback in the application.
 
-```powershell
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```mermaid
+flowchart TB
+    UI[React and TypeScript workspace] --> API[FastAPI]
+    API --> Engine[Deterministic material simulation]
+    API --> Agent[Bounded coordinator]
+    Agent --> MCP[MCP SDK over stdio]
+    Agent -. Explicit opt-in only .-> Provider[Remote provider: acceptance unverified]
+    MCP --> Engine
+    MCP --> Repo[Reviewed parameterized Cypher]
+    Engine --> Repo
+    API --> Human[Explicit human approval]
+    Human --> Repo
+    Repo <--> Graph[(FalkorDB)]
 ```
+
+The React/Vite frontend uses TanStack Query, Zod and Cytoscape.js. Unprivileged
+Nginx proxies same-origin requests to FastAPI. See the [architecture](docs/ARCHITECTURE.md),
+[graph model](docs/GRAPH_MODEL.md) and [MCP/security boundaries](docs/SECURITY.md).
+
+## Run locally with Docker
+
+Requires Docker Desktop with Linux containers, or Docker Engine with Compose v2.
+No API key, host Python or host Node is required to run the application.
 
 ```sh
-test -e .env || cp .env.example .env
+git clone https://github.com/HIZMALI/rippleproof-ai.git
+cd rippleproof-ai
+docker compose up --build -d --wait
 ```
 
-Container images are pinned by verified manifest digest, including the existing
-tested FalkorDB image. Dependencies use pinned Python requirements and `npm ci`.
-The `graph-data` named volume persists at `/var/lib/falkordb/data` with AOF enabled.
-Restarting or recreating containers preserves it. Never remove it to troubleshoot
-a populated installation; inspect `docker compose ps` and
-`docker compose logs backend falkordb`. New installs are not seeded automatically.
+**Only for a fresh, empty demo graph**, initialize the synthetic data:
 
-## A short working demo
+```sh
+docker compose exec backend python -m rippleproof.seed
+docker compose exec backend python -m rippleproof.migrate
+```
 
-Use default as-of 2026-10-15 and S-04 outage [2026-10-16, 2026-10-24).
-The synthetic graph has 145 operational nodes and 291 relationships, including
-82 receipts. Results are calculated from the graph, not preloaded UI fixtures.
+**For an existing populated installation, skip both commands.** The base seed
+restores fixture properties; it is not an upgrade command. An explicitly required
+base-only graph upgrade uses the additive migration alone. Nothing seeds on startup.
+Keep the `graph-data` volume: it stores FalkorDB AOF data at `/var/lib/falkordb/data`.
+Do not delete volumes or reseed to troubleshoot an existing installation.
 
-| Observation | Reference scenario result |
+| Local service | Address |
 | --- | --- |
-| Orders materially covered by deadline | Baseline 19 → disrupted 18 → mitigated 20 |
-| Newly at-risk orders / restored by mitigation | O-105 and O-106 |
-| Gross additional synthetic procurement cost | 1,364.00 synthetic units |
-| Evidence path | S-04 → P-22 ← PR-05 ← O-101 |
-| Part-specific certificate counterexample | S-10 lacks C-02 for P-22; can qualify for P-12 |
+| Application | [127.0.0.1:18080](http://127.0.0.1:18080/#/overview) |
+| FastAPI / interactive API reference | [127.0.0.1:18000/docs](http://127.0.0.1:18000/docs) |
+| Health / OpenAPI | `/health` and `/openapi.json` on the API origin |
+| FalkorDB | `127.0.0.1:6379` |
 
-Inspect P-22 supplier and certificate evidence, then compare P-12. Open
-**Guided MCP tools** and explicitly run guided tools: genuine SDK stdio calls
-and real FalkorDB, **zero model requests**. Its fixed sequence is labeled a
-deterministic walkthrough, usable without a key.
+Ports bind to loopback. Images use manifest digests; Python versions and npm's
+lockfile are pinned. Compose works without `.env`; if needed, copy `.env.example`
+only when `.env` does not already exist. Change `WEB_PORT`, `API_PORT` or
+`FALKORDB_PORT` for port conflicts. Inspect `docker compose ps` and service logs
+for startup failures. These addresses are local; no public deployment is claimed.
 
-A separate **Run real agent** control remains disabled unless backend capability
-permits it. Capability reads make no provider calls and return no credentials.
-An enabled control also requires explicit run intent and fresh health. Controlled
-tests are labeled **model simulator, not remote LLM**. No external LLM run has
-been verified; paid testing is declined for now. Read [the agent gate](docs/AGENT_DEMO_GATE.md) before
-configuring a provider. Key presence and settings do not authorize spending.
-Resource bounds are enforced; this demo does not enforce a currency budget.
+## Reproduce the reference scenario
 
-**Review internal plan** recalculates a full read-only preview. Approval is
-optional, uses a separate server secret, explicit human confirmation and an
-idempotency key, and is restricted to trusted localhost in the UI. No secret is
-bundled or stored in browser storage. The default ledger is empty. Tests approve
-only isolated graphs; no live approval has been performed. An internal record
-places no order, reserves no stock and contacts no vendor.
+Open **Scenario Workbench** and run S-04 with as-of **2026-10-15**, outage start
+**2026-10-16**, exclusive end **2026-10-24**, and mitigation enabled.
 
-## Why a graph is essential
+| Actual synthetic result | Value |
+| --- | ---: |
+| Baseline material coverage | 19 of 21 open orders |
+| Disrupted material coverage | 18 of 21 |
+| Mitigated material coverage | 20 of 21 |
+| Gross additional procurement cost | 1,364.00 synthetic cost units |
 
-FalkorDB is the sole canonical store for suppliers, BOMs, orders, inventory,
-shipments, certificates and Decision/Evidence memory. Fixed parameterized Cypher
-returns actual multi-hop paths and coherent snapshots. Deterministic Python
-calculates demand, once-only allocation, dispatch capacity, lead time, expiry
-checks and Decimal costs. The agent selects six constrained read-only MCP tools.
-It cannot execute unrestricted Cypher, approve purchases, or supply authoritative
-quantities or prices. There is no parallel SQL/JSON knowledge database or
-graph-down fixture fallback.
+The fixture has 145 operational nodes and 291 relationships, including 82 inbound
+shipments. O-105 and O-106 become newly at risk and are restored. S-09 qualifies
+for P-22; S-10 lacks C-02 for P-22 but can qualify for P-12. The dependency path
+`S-04 → P-22 ← PR-05 ← O-101` requires 32 P-22 units; O-101 remains covered.
+Reachability and material shortage are distinct. Coverage is not a delivery
+guarantee; prices and entities are synthetic. [Demo walkthrough](docs/DEMO.md).
 
-React/TypeScript, Vite, TanStack Query, Zod and Cytoscape.js provide the responsive
-interface. Unprivileged Nginx proxies same-origin requests to FastAPI, Pydantic
-and the official FalkorDB client. API validators come from the running OpenAPI.
+## Query the evidence
 
-This is the actual `IMPACT_PATHS` template from
-[queries.py](rippleproof/queries.py); user values are passed as parameters:
+This is the executable `IMPACT_PATHS` template from [queries.py](rippleproof/queries.py):
 
 ```cypher
 MATCH evidence = (supplier:Supplier {id: $supplier_id})
@@ -131,134 +133,67 @@ RETURN evidence
 ORDER BY purchase_order.id, part.id, product.id
 ```
 
-The read-only endpoint below runs this reviewed query with `supplier_id=S-04`
-and `order_status=OPEN`, returning real connected evidence paths:
-
 ```sh
 curl "http://127.0.0.1:18000/api/impact-paths?supplier_id=S-04"
 ```
 
-Use `curl.exe` in Windows PowerShell if `curl` is an alias. A dependency path
-alone does not establish lateness; the scenario engine checks quantities and dates.
+Use `curl.exe` in Windows PowerShell if `curl` is an alias. User-supplied IDs
+are validated parameters; no raw Cypher endpoint exists. More [actual queries
+and algorithms](docs/CYPHER_AND_EVIDENCE.md), [API examples](docs/REFERENCE_API.md).
 
-- [Architecture](docs/ARCHITECTURE.md), [graph schema](docs/GRAPH_MODEL.md),
-  [actual Cypher and evidence](docs/CYPHER_AND_EVIDENCE.md)
-- [Detailed API/reference commands](docs/REFERENCE_API.md),
-  [Phase 4 walkthrough](docs/DEMO_PHASE4.md)
-- [Recording plan](docs/SUBMISSION_VIDEO_SCRIPT.md),
-  [submission text](docs/SUBMISSION_TEXT.md),
-  [publication checklist](docs/PUBLICATION_CHECKLIST.md)
+## Run tests
 
-## Verify and develop
-
-No host Python/Node is required to run the application. For development, use
-Python 3.12+ and Node 22.12+ (Node 24 verified). Exact test scopes and outcomes
-are in [Phase 5B-1 verification](docs/PHASE5B1_VERIFICATION.md): 209 backend
-tests (79 real-FalkorDB integration), 51 component tests and 17 browser tests.
-Those are recorded executed results, not a claim that every later documentation
-change reran the full suite. Isolated clean-install evidence and its exact tested
-archive are documented in [Phase 5A verification](docs/PHASE5A_VERIFICATION.md).
+With the Compose graph running:
 
 ```sh
 docker compose --profile test build tests
-docker compose --profile test run --rm tests
+docker compose --profile test run --rm -e RIPPLEPROOF_RETAIN_TEST_GRAPHS=1 tests
 ```
 
-Integration tests query the real server using unique graphs, removing only graphs
-they created. They fail if FalkorDB is unavailable; they do not silently skip.
-Host workflow:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements-dev.txt
-.venv\Scripts\python -m pytest -q
-.venv\Scripts\python -m ruff check .
-.venv\Scripts\python -m ruff format --check .
-.venv\Scripts\python -m pip check
-```
-
-On macOS/Linux use `.venv/bin/python` instead. Host integration tests default to
-localhost:6379. Frontend workflow:
+The backend suite includes unit tests, mocked-provider transport tests and real
+FalkorDB integration tests using unique isolated graphs. Remote providers are
+never contacted by tests. For frontend development, use Node 22.12+:
 
 ```sh
 cd frontend
 npm ci
-npx playwright install chromium
 npm test
 npm run typecheck
 npm run lint
-npm run format:check
 npm run build
-npm run test:e2e
 ```
 
-Browser tests require production services on default ports plus free 18001/18081
-for their isolated backend/Vite harness. They approve only isolated graphs and
-briefly stop/start the production **backend**, restoring it in a finally block;
-the live graph is never reseeded. Avoid running during an operator session.
-Set process environment `EVIDENCE_DIRECTORY=../docs/verification/phase5a/regression`
-to preserve historical Phase 4 recordings. Traces/HAR/video are disabled to avoid
-capturing approval credentials.
+[Testing instructions and executed results](docs/TESTING.md) cover the full
+backend/browser suites, accessibility, isolated approval tests and a fresh
+Docker installation. Browser regressions briefly restart their selected Compose
+backend; use an isolated stack as documented.
 
-`npm run dev -- --port 18081` starts an optional development server.
-`npm run contracts` regenerates validators from the running API. To verify a
-separate source-only installation, from repository root:
+## Limits and safe operation
 
-```powershell
-.venv\Scripts\python scripts/verify_clean_install.py
-```
+- Materials-only feasibility and bounded greedy policies; no global optimum,
+  factory schedule or delivery guarantee.
+- Six read-only MCP tools; no unrestricted Cypher, purchase or approval tool.
+  Guided mode is deterministic. The optional remote provider is disabled by
+  default; bounded orchestration is implemented, external acceptance unverified.
+- Human approval records an internal plan. It places no purchase, reserves no
+  stock and contacts no supplier. Credentials stay server-side or in a transient
+  manual approval field, never in the frontend bundle or browser storage.
+- This one-worker localhost demo is not hardened for public hosting. The approval
+  lock does not exclude external graph writers between validation and write.
+  Resource bounds do not impose a monetary spending cap. See [security](docs/SECURITY.md).
 
-This opt-in tool creates a new export, Compose project, volume, graph and ports.
-It checks empty state, explicitly seeds only that new graph, tests persistence
-and isolated graph outage, then runs a read-only browser walkthrough. It leaves
-the stack/data intact. The browser driver uses development dependencies as test
-infrastructure; the installed app uses only exported source and Docker, with no
-private fixtures or existing volume.
+## AI-assisted development
 
-## Limits and release state
+OpenAI Codex assisted with implementation, synthetic fixtures, tests,
+documentation, local verification and demo preparation during Graph Hacks 2026.
+The human participant directed scope and reported reviewing the phased work;
+they remain responsible for understanding, explaining and validating the code
+and this disclosure. No independent human audit or verified remote-agent run is
+claimed. Controlled model tests are explicitly distinguished from remote LLM calls.
 
-Coverage means material availability by deadline, not guaranteed production or
-delivery. The bounded greedy planner is not globally optimal. Existing planned
-transit intervals are authoritative; this is not a transport scheduler. All
-entities and prices are synthetic. There is no enterprise API, real procurement
-or production authentication. The one-worker approval lock does not exclude
-external graph writers between read and write; serialize edits during approvals.
-This localhost demo is not hardened for public hosting. Dataset/tool-payload
-limits produce explicit errors.
+## Rights
 
-Publish only an explicitly reviewed source candidate with its external per-file
-manifest and ZIP SHA-256. The original workstation archive is **not publishable**.
-`python scripts/release_candidate.py --phase phase5b1` is a development export
-helper; a newly generated export is a different candidate requiring fresh review.
-It excludes local state/secrets/dependencies/backups/Git metadata and scans
-selected files and reachable history. It never commits, publishes or pushes.
-Do not replace the reviewed publication tree with an unreviewed working copy.
-
-A genuine local three-minute, silent English-captioned demonstration has been
-produced and decoded/playback-checked. It shows real local application results,
-deterministic Guided MCP and a read-only plan preview. It does not show a remote
-LLM run or live approval. Video hosting/upload and a public URL remain pending;
-private recordings and production evidence are excluded from this source tree.
-
-Project rights remain **All Rights Reserved**, per the owner's explicit decision.
-The declared personal copyright holder is Mert Hızmalı; no project open-source
-LICENSE is granted. See [RIGHTS.md](RIGHTS.md). Preserve [third-party notices](THIRD_PARTY_NOTICES.md):
-FalkorDB server is SSPLv1; the Python client is MIT. Container layers are not
-redistributed in this source candidate. Commercial hosting/distribution requires
-separate license review.
-
-## AI-assistance disclosure
-
-OpenAI Codex assisted with Phases 1–5B-1 implementation, synthetic fixtures, tests,
-documentation and local verification during the event on 2026-10-15/16, followed
-by local demo production and publication preparation. No Git history has been
-backdated or invented.
-The human participant chose scope, directed phased work, and reported reviewing
-and approving prior phases. They remain responsible for reviewing, understanding
-and explaining the final code and making the competition disclosure. This does
-not claim an independent human code audit. Only recorded executed tests support
-test claims. Remote LLM acceptance remains unexecuted; guided and controlled
-evidence are disclosed separately.
-
-This publication candidate stops for final review. Public repository/video URLs,
-remote-provider acceptance, deployment and organizer submission are not completed.
+Copyright © 2026 Mert Hızmalı. All rights reserved. [Project rights](RIGHTS.md).
+Public visibility does not grant an open-source license for the original code.
+Preserve [third-party notices](THIRD_PARTY_NOTICES.md) and their applicable terms,
+including the distinction between the SSPLv1 FalkorDB server and MIT Python client.

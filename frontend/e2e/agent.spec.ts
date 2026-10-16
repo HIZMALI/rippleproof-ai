@@ -9,7 +9,7 @@ const python = resolve(
   process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
 );
 const artifact =
-  process.env.EVIDENCE_DIRECTORY ?? "../docs/verification/phase5a";
+  process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/browser";
 function control(action: string) {
   execFileSync(python, ["../scripts/phase4_test_backend.py", action], {
     stdio: "pipe",

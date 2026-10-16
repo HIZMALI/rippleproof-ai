@@ -108,7 +108,7 @@ The model selects these tools in agent mode; guided mode uses a fixed sequence
 with zero model calls. `resolve_evidence` requires a matching operational revision
 for current facts; archived citations retain their historical scope.
 
-Phase 5A's clean-install test disconnects **only its isolated FalkorDB service**.
+The source-only clean-install test disconnects **only its isolated FalkorDB service**.
 Impact, simulation and guided MCP must return actual 503/error evidence, then
 recover with identical results when the service returns. No fixture answer or
-fallback datastore is available. Execution proof is in the Phase 5A report.
+fallback datastore is available. See [testing and reproducibility](TESTING.md).

@@ -7,7 +7,7 @@ import {
 } from "../src/api/contracts";
 
 const captures =
-  process.env.EVIDENCE_DIRECTORY ?? "../docs/verification/phase4";
+  process.env.EVIDENCE_DIRECTORY ?? "../.local/verification/browser";
 async function simulate(page: Page) {
   await page.goto("/#/workbench");
   const response = page.waitForResponse(
