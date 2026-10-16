@@ -1,0 +1,19 @@
+{
+  "testOnly": true,
+  "operator": "browser-test-harness",
+  "decision_id": "D-554bdbdbdee1df1e9bd436d3",
+  "scenario_id": "SC-4990e7e493adea7efa18",
+  "operational_fingerprint": "d3c35628f3c00ce059907dfbe57a6acfa639d5b95f931b650a7faeb55abee19e",
+  "before": {
+    "nodes": 145,
+    "relationships": 291
+  },
+  "after": {
+    "nodes": 147,
+    "relationships": 441
+  },
+  "oneRecordDespiteLostResponse": true,
+  "exactIntentReplay": true,
+  "retrievedAfterBackendRestart": true,
+  "browserStorageEmpty": true
+}

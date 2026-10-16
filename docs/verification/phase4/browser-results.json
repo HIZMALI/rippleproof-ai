@@ -1,0 +1,104 @@
+{
+  "browser": "Chromium 156.0.8078.4",
+  "stats": {
+    "startTime": "2026-10-15T21:07:48.703Z",
+    "duration": 134527.71099999998,
+    "expected": 15,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "approval.spec.ts",
+      "test": "isolated real persistence, lost-response retry, exact intent key and restart",
+      "status": "passed",
+      "duration_ms": 11842
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "isolated stale source returns 409, erases inputs and forces fresh review",
+      "status": "passed",
+      "duration_ms": 10584
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "real 401 clears the transient credential and close/navigation discard it",
+      "status": "passed",
+      "duration_ms": 8622
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "real validation 422 on a tampered wire request is safe and clears token",
+      "status": "passed",
+      "duration_ms": 8132
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "real disabled approval and unauthorized provider return 503 without a model call",
+      "status": "passed",
+      "duration_ms": 9480
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "real empty graph, unavailable database and backend restart hide stale calculations",
+      "status": "passed",
+      "duration_ms": 36459
+    },
+    {
+      "file": "approval.spec.ts",
+      "test": "isolated ledger shows actual paged records, filters and historical details",
+      "status": "passed",
+      "duration_ms": 8234
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "live API contracts, full workbench, per-part certificates, graph and guided MCP",
+      "status": "passed",
+      "duration_ms": 3448
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "changing inputs clears old outcomes and mitigation off is honored by real engine",
+      "status": "passed",
+      "duration_ms": 522
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "real workbench layout 1440px, accessibility and keyboard evidence",
+      "status": "passed",
+      "duration_ms": 1725
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "real workbench layout 1024px, accessibility and keyboard evidence",
+      "status": "passed",
+      "duration_ms": 1540
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "real workbench layout 768px, accessibility and keyboard evidence",
+      "status": "passed",
+      "duration_ms": 1454
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "real workbench layout 390px, accessibility and keyboard evidence",
+      "status": "passed",
+      "duration_ms": 1493
+    },
+    {
+      "file": "workspace.spec.ts",
+      "test": "live invalid dates, unknown supplier and missing decision are safe",
+      "status": "passed",
+      "duration_ms": 338
+    },
+    {
+      "file": "z-restart.spec.ts",
+      "test": "actual Docker backend stop/start: no stale success, recovery and source persistence",
+      "status": "passed",
+      "duration_ms": 26014
+    }
+  ],
+  "notes": "Real backend/FalkorDB; explicitly isolated test approvals. No secrets, traces, HAR or video."
+}

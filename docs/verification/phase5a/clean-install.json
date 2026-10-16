@@ -1,0 +1,74 @@
+{
+  "project": "phase5a_75262774c8ff",
+  "graph": "clean_75262774c8ff",
+  "volume": "phase5a_75262774c8ff_graph-data",
+  "api_origin": "http://127.0.0.1:11014 (local verification only)",
+  "web_origin": "http://127.0.0.1:11015 (local verification only)",
+  "db_port": 11016,
+  "initial_empty": true,
+  "summary": {
+    "graph": "clean_75262774c8ff",
+    "node_count": 145,
+    "relationship_count": 291,
+    "nodes_by_label": {
+      "Supplier": 12,
+      "Part": 16,
+      "Product": 8,
+      "Order": 24,
+      "Certificate": 3,
+      "Decision": 0,
+      "Evidence": 0,
+      "InboundShipment": 82
+    },
+    "relationships_by_type": {
+      "SUPPLIES": 24,
+      "USES": 24,
+      "CONTAINS": 29,
+      "REQUIRES_CERT": 17,
+      "HOLDS_CERT": 33,
+      "SELECTS": 0,
+      "AFFECTS": 0,
+      "SUPPORTED_BY": 0,
+      "FULFILLS": 82,
+      "FOR_PART": 82,
+      "REFERENCES": 0
+    }
+  },
+  "fingerprint": "d3c35628f3c00ce059907dfbe57a6acfa639d5b95f931b650a7faeb55abee19e",
+  "scenario_id": "SC-4990e7e493adea7efa18",
+  "migration_idempotent": true,
+  "restart_and_recreation_equal": true,
+  "database_removal_breaks_graph_functions": {
+    "impact": {
+      "http_status": 503,
+      "error_code": "database_unavailable"
+    },
+    "simulation": {
+      "http_status": 503,
+      "error_code": "database_unavailable"
+    },
+    "guided_mcp": {
+      "http_status": 503,
+      "error_code": "database_unavailable"
+    }
+  },
+  "browser": {
+    "passed": true,
+    "coverage": [
+      19,
+      18,
+      20
+    ],
+    "graph": true,
+    "per_part_certificates": true,
+    "guided_mcp_steps": 4,
+    "model_requests": 0,
+    "read_only_preview": true,
+    "ledger_empty": true,
+    "console_errors": []
+  },
+  "provider_remote_calls": 0,
+  "live_approvals": 0,
+  "retained_running": true,
+  "tested_archive_sha256": "d17f06dbbcf268990eb0fba47285e216387af4bebbcd4f28fef5c7e6b9c96986"
+}

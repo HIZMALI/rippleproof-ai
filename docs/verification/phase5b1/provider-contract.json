@@ -1,0 +1,108 @@
+{
+  "evidence_kind": "MOCKED HTTP TRANSPORT ONLY; NOT A REMOTE PROVIDER TRACE",
+  "remote_provider_requests": 0,
+  "blocked_remote_network_attempts": 0,
+  "documented_request_shape_checks_passed": true,
+  "exact_model_checked": "gpt-6-luna",
+  "account_access_or_remote_acceptance_verified": false,
+  "tool_schemas_checked": [
+    "graph_summary",
+    "trace_supplier_impact",
+    "evaluate_part_alternatives",
+    "simulate_supply_disruption",
+    "get_decision_history",
+    "resolve_evidence"
+  ],
+  "strict_final_wire_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "answer_kind": {
+        "title": "Answer Kind",
+        "type": "string",
+        "enum": [
+          "scenario_summary"
+        ]
+      },
+      "scenario_id": {
+        "pattern": "^SC-[a-f0-9]{20}$",
+        "title": "Scenario Id",
+        "type": "string"
+      },
+      "evidence_refs": {
+        "items": {
+          "pattern": "^[A-Za-z0-9:_-]{1,180}$",
+          "type": "string"
+        },
+        "maxItems": 12,
+        "minItems": 1,
+        "title": "Evidence Refs",
+        "type": "array"
+      }
+    },
+    "required": [
+      "answer_kind",
+      "scenario_id",
+      "evidence_refs"
+    ],
+    "title": "FinalSelection",
+    "type": "object"
+  },
+  "sanitized_mocked_metadata_example": {
+    "requests": [
+      {
+        "sequence": 1,
+        "started_at": "2026-10-15T23:14:52.627217+00:00",
+        "duration_ms": 0.797,
+        "transport": "injected",
+        "http_status": 200,
+        "request_id": "req_controlled_fixture_1",
+        "response_id": "resp_controlled_fixture_1",
+        "model": "gpt-6-luna",
+        "provider_status": "completed",
+        "outcome": "completed",
+        "error_code": null,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 5,
+          "total_tokens": 22
+        },
+        "usage_consistent": true,
+        "redacted_fields": []
+      },
+      {
+        "sequence": 2,
+        "started_at": "2026-10-15T23:14:52.628267+00:00",
+        "duration_ms": 0.371,
+        "transport": "injected",
+        "http_status": 200,
+        "request_id": "req_controlled_fixture_2",
+        "response_id": "resp_controlled_fixture_2",
+        "model": "gpt-6-luna",
+        "provider_status": "completed",
+        "outcome": "completed",
+        "error_code": null,
+        "usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "total_tokens": null
+        },
+        "usage_consistent": null,
+        "redacted_fields": []
+      }
+    ],
+    "requests_recorded": 2,
+    "usage_complete": false,
+    "usage": {
+      "input_tokens": null,
+      "output_tokens": null,
+      "total_tokens": null
+    },
+    "observed_usage": {
+      "input_tokens": 17,
+      "output_tokens": 5,
+      "total_tokens": 22
+    },
+    "total_provider_duration_ms": 1.1680000000000001
+  },
+  "note": "Missing usage in request two intentionally leaves complete totals null."
+}

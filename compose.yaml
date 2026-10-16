@@ -1,0 +1,89 @@
+name: rippleproof-ai
+
+x-graph-environment: &graph-environment
+  FALKORDB_HOST: falkordb
+  FALKORDB_PORT: 6379
+  FALKORDB_GRAPH: ${FALKORDB_GRAPH:-rippleproof}
+  FALKORDB_CONNECT_TIMEOUT_S: ${FALKORDB_CONNECT_TIMEOUT_S:-2}
+  FALKORDB_SOCKET_TIMEOUT_S: ${FALKORDB_SOCKET_TIMEOUT_S:-5}
+  FALKORDB_QUERY_TIMEOUT_MS: ${FALKORDB_QUERY_TIMEOUT_MS:-3000}
+
+services:
+  falkordb:
+    # Exact already-tested manifest; no database upgrade or data-directory change.
+    image: falkordb/falkordb@sha256:b0bdcac2cbaff989e77cb0610439b7a9289e86de033ccbbd4368b66fb680ae7a
+    ports:
+      - "127.0.0.1:${FALKORDB_PORT:-6379}:6379"
+    volumes:
+      # The image's entrypoint sets --dir after REDIS_ARGS; mount its actual path.
+      - graph-data:/var/lib/falkordb/data
+    environment:
+      REDIS_ARGS: "--appendonly yes --appendfsync everysec"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -e ping | grep -q PONG && redis-cli -e GRAPH.LIST >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "127.0.0.1:${API_PORT:-18000}:8000"
+    environment:
+      <<: *graph-environment
+      RIPPLEPROOF_APPROVAL_SECRET: ${RIPPLEPROOF_APPROVAL_SECRET:-}
+      RIPPLEPROOF_PROVIDER: ${RIPPLEPROOF_PROVIDER:-disabled}
+      RIPPLEPROOF_ALLOW_PAID_CALLS: ${RIPPLEPROOF_ALLOW_PAID_CALLS:-false}
+      RIPPLEPROOF_OPENAI_API_KEY: ${RIPPLEPROOF_OPENAI_API_KEY:-}
+      RIPPLEPROOF_OPENAI_MODEL: ${RIPPLEPROOF_OPENAI_MODEL:-}
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=8)"]
+      interval: 10s
+      timeout: 9s
+      retries: 3
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "127.0.0.1:${WEB_PORT:-18080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  tests:
+    profiles: ["test"]
+    build:
+      context: .
+      target: test
+    environment: *graph-environment
+    depends_on:
+      falkordb:
+        condition: service_healthy
+
+volumes:
+  graph-data:

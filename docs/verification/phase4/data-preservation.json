@@ -1,0 +1,35 @@
+{
+  "comparison": "Complete typed operational snapshot equals private pre-work backup",
+  "operational_fingerprint": "d3c35628f3c00ce059907dfbe57a6acfa639d5b95f931b650a7faeb55abee19e",
+  "operational_nodes": 145,
+  "operational_relationships": 291,
+  "physical_summary": {
+    "graph": "rippleproof",
+    "node_count": 145,
+    "relationship_count": 291,
+    "nodes_by_label": {
+      "Supplier": 12,
+      "Part": 16,
+      "Product": 8,
+      "Order": 24,
+      "Certificate": 3,
+      "Decision": 0,
+      "Evidence": 0,
+      "InboundShipment": 82
+    },
+    "relationships_by_type": {
+      "SUPPLIES": 24,
+      "USES": 24,
+      "CONTAINS": 29,
+      "REQUIRES_CERT": 17,
+      "HOLDS_CERT": 33,
+      "SELECTS": 0,
+      "AFFECTS": 0,
+      "SUPPORTED_BY": 0,
+      "FULFILLS": 82,
+      "FOR_PART": 82,
+      "REFERENCES": 0
+    }
+  },
+  "live_graph_unchanged": true
+}
