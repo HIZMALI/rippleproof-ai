@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <title>A Supplier Outage Isn't a Delayed Order · RippleProof AI</title>
+  <meta name="description" content="An engineering case study in FalkorDB evidence, conserved inventory, dated certifications and constrained MCP tools. Why a connected order can still be covered.">
+  <meta name="author" content="Mert Hızmalı">
+  <link rel="canonical" href="https://hizmali.github.io/rippleproof-ai/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="RippleProof AI · Engineering notes">
+  <meta property="og:title" content="A Supplier Outage Isn't a Delayed Order: Building RippleProof AI with FalkorDB">
+  <meta property="og:description" content="How graph evidence, deterministic simulation, and constrained MCP tools help distinguish connected orders from real material shortages.">
+  <meta property="og:url" content="https://hizmali.github.io/rippleproof-ai/">
+  <meta property="og:image" content="https://hizmali.github.io/rippleproof-ai/assets/workbench.png">
+  <meta property="og:image:width" content="1440">
+  <meta property="og:image:height" content="1000">
+  <meta property="og:image:alt" content="RippleProof's actual local workbench showing the S-04 scenario and O-101 graph evidence.">
+  <meta property="article:published_time" content="2026-10-17">
+  <meta property="article:author" content="Mert Hızmalı">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#article">Skip to article</a>
+<header class="masthead shell" id="top">
+  <a class="wordmark" href="#top" aria-label="RippleProof AI, top of article">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><path d="M5 23 16 6l11 17H5Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 23h22M16 6v17" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="6" r="3" fill="currentColor"/><circle cx="5" cy="23" r="3" fill="currentColor"/><circle cx="27" cy="23" r="3" fill="currentColor"/></svg>
+    <span>RippleProof <span class="brand-suffix">AI</span></span>
+  </a>
+  <span class="masthead-label">Engineering notes</span>
+  <nav aria-label="Project links"><a href="https://github.com/HIZMALI/rippleproof-ai">Source code <span aria-hidden="true">↗</span></a><a href="https://youtu.be/ttOWMdWxIPU">Watch demo <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main id="article" class="shell" tabindex="-1">
+  <article aria-labelledby="article-title">
+    <header class="article-header">
+      <p class="eyebrow"><span class="edition">Field note 01</span> Graph Hacks 2026 <span aria-hidden="true">/</span> Track 1</p>
+      <h1 id="article-title">A Supplier Outage Isn't a Delayed Order<span class="visually-hidden">: </span><span class="title-rest">Building RippleProof AI with FalkorDB</span></h1>
+      <p class="subtitle">How graph evidence, deterministic simulation, and constrained MCP tools help distinguish connected orders from real material shortages.</p>
+      <div class="byline"><p><strong>Mert Hızmalı</strong><span>Team MORVE</span></p><p><time datetime="2026-10-17">17 October 2026</time><span>Engineering case study · 8 min read</span></p></div>
+    </header>
+
+    <div class="article-layout">
+      <aside class="contents">
+        <nav aria-label="In this article"><p class="eyebrow">In this article</p><ol>
+          <li><a href="#surprise">The surprising result</a></li>
+          <li><a href="#evidence">Relational evidence</a></li>
+          <li><a href="#allocation">Beyond traversal</a></li>
+          <li><a href="#outcomes">Three outcomes</a></li>
+          <li><a href="#certification">Feasible alternatives</a></li>
+          <li><a href="#mcp">MCP, without the hype</a></li>
+          <li><a href="#human">Human decisions</a></li>
+          <li><a href="#lessons">What we learned</a></li>
+          <li><a href="#unfinished">What remains</a></li>
+        </ol>
+        <p class="margin-note">Connected data supplies the evidence.<br>Constraints determine the outcome.</p></nav>
+      </aside>
+
+      <div class="story">
+        <section id="surprise" aria-labelledby="surprise-title">
+          <h2 id="surprise-title" class="visually-hidden">The surprising result</h2>
+          <p class="opening-question">A supplier is unavailable. An order depends on that supplier. Is the order delayed?</p>
+          <p>Our synthetic supply chain makes that question awkward in a useful way. Supplier <code>S-04</code> supplies part <code>P-22</code>, product <code>PR-05</code> uses that part, and order <code>O-101</code> contains eight of those products. Each needs four P-22 units: <strong>32 units altogether.</strong> The dependency is real. So is the result: O-101 remains materially covered.</p>
+          <p>Building RippleProof AI for Graph Hacks 2026, Track 1 meant keeping those two facts separate. A graph can show where a disruption might propagate. Declaring a shortage requires quantities, arrivals and competition for shared inventory. Dependency is the beginning of the investigation.</p>
+        </section>
+
+        <figure class="relationship-figure">
+          <div class="figure-heading"><span class="eyebrow">01 / Connected evidence</span><span class="figure-tag">Actual reference path</span></div>
+          <div class="chain" role="img" aria-label="Supplier S-04 supplies Part P-22. Product PR-05 uses P-22. Order O-101 contains PR-05. Stored directions: S-04 to P-22, PR-05 to P-22, O-101 to PR-05.">
+            <div class="chain-node supplier" aria-hidden="true"><span>Supplier</span><strong>S-04</strong></div>
+            <div class="chain-edge" aria-hidden="true"><span>SUPPLIES</span><svg viewBox="0 0 100 24"><path d="M2 12h93m-7-6 7 6-7 6"/></svg></div>
+            <div class="chain-node part" aria-hidden="true"><span>Part</span><strong>P-22</strong></div>
+            <div class="chain-edge" aria-hidden="true"><span>USES</span><svg viewBox="0 0 100 24"><path d="M5 12h93M12 6l-7 6 7 6"/></svg></div>
+            <div class="chain-node" aria-hidden="true"><span>Product</span><strong>PR-05</strong></div>
+            <div class="chain-edge" aria-hidden="true"><span>CONTAINS</span><svg viewBox="0 0 100 24"><path d="M5 12h93M12 6l-7 6 7 6"/></svg></div>
+            <div class="chain-node order" aria-hidden="true"><span>Order</span><strong>O-101</strong></div>
+          </div>
+          <div class="equation"><span>8 products × 4 part units</span><strong>= 32 P-22 units</strong><span class="covered">Materially covered</span></div>
+          <figcaption>Arrows preserve stored relationship directions, including the two incoming edges in the supplier-to-order traversal. This path proves dependency; coverage comes from allocation.</figcaption>
+        </figure>
+
+        <section id="evidence" aria-labelledby="evidence-title">
+          <p class="section-kicker">01 / Start with the facts</p>
+          <h2 id="evidence-title">Why relational evidence matters</h2>
+          <p>FalkorDB holds suppliers, parts, products, orders, certificates and inbound shipments. <code>SUPPLIES</code> edges carry price, lead days and daily capacity; <code>USES</code> carries a bill-of-materials coefficient; <code>CONTAINS</code> carries order quantity. Certificate requirements and dated holdings connect parts and suppliers to certificates. These relationship properties make the path operationally useful.</p>
+          <p>This is the executable <a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/rippleproof/queries.py"><code>IMPACT_PATHS</code> template</a>, reproduced exactly. Supplier ID and order status are validated parameters, never concatenated query text.</p>
+          <figure class="code-figure"><figcaption><span>Cypher / IMPACT_PATHS</span><a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/rippleproof/queries.py">View source <span aria-hidden="true">↗</span></a></figcaption><pre tabindex="0" aria-label="Parameterized impact path Cypher; scroll horizontally if needed"><code id="impact-query"><span class="cypher-keyword">MATCH</span> evidence = (supplier:Supplier {id: <span class="cypher-param">$supplier_id</span>})
+  -[:SUPPLIES {is_primary: true}]-&gt;(part:Part)
+  &lt;-[:USES]-(product:Product)&lt;-[:CONTAINS]-(purchase_order:Order)
+<span class="cypher-keyword">WHERE</span> purchase_order.status = <span class="cypher-param">$order_status</span>
+<span class="cypher-keyword">RETURN</span> evidence
+<span class="cypher-keyword">ORDER BY</span> purchase_order.id, part.id, product.id</code></pre></figure>
+          <p>Returning <code>evidence</code> retains the connected path rather than a detached list of order IDs. FalkorDB is the canonical operational and decision-evidence store. FastAPI reads reviewed Cypher through the official Python client; there is no parallel SQL/JSON knowledge database or fixture answer when the graph is unavailable.</p>
+        </section>
+
+        <section id="allocation" aria-labelledby="allocation-title">
+          <p class="section-kicker">02 / Conserve the material</p>
+          <h2 id="allocation-title">The part traversal cannot answer alone</h2>
+          <p>The deterministic Python engine normalizes actual graph responses into a coherent, request-scoped snapshot. It expands every order line into part demand, then allocates shared stock and inbound receipts once. Orders sort by deadline, descending numeric priority and stable ID. Lots are consumed oldest-arrival first, only when available by the deadline.</p>
+          <p>Allocation is atomic across an order’s complete bill of materials: an incomplete order consumes nothing. Otherwise, one failed order could strand scarce material while another could have been fulfilled. The ledger preserves a simple invariant for every lot: received equals allocated plus remaining.</p>
+          <p>An outage shifts planned dispatches within its window to the exclusive end, preserving their recorded transit interval. Already-dispatched receipts are treated separately; cancelled receipts supply nothing. New alternative shipments must fit lead times, remaining supplier/part daily capacity and certificates valid on arrival. Counting reachable orders answers none of these allocation questions.</p>
+        </section>
+
+        <figure class="screenshot wide-figure"><a href="assets/workbench.png" aria-label="Open the full-size authentic scenario workbench screenshot"><img src="assets/workbench.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Actual local RippleProof Scenario Workbench showing the S-04 disruption, computed coverage comparison and selected O-101 dependency evidence."></a><figcaption><span class="caption-number">02</span> Authentic local application capture, unchanged from the published repository. Selecting O-101 exposes its connected evidence and 32-unit P-22 demand. <a href="assets/workbench.png">Open full size</a>.</figcaption></figure>
+
+        <section id="outcomes" aria-labelledby="outcomes-title">
+          <p class="section-kicker">03 / Compare the counterfactuals</p>
+          <h2 id="outcomes-title">One outage, three outcomes</h2>
+          <p>The reference run uses an as-of date of 15 October 2026 and an S-04 outage from 16 October through, but excluding, 24 October. All three scenarios recalculate the same 21 open orders:</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Scenario material coverage comparison"><table><caption class="visually-hidden">Verified synthetic material coverage, out of 21 open orders</caption><thead><tr><th scope="col">Scenario</th><th scope="col">Materially covered</th><th scope="col">Interpretation</th></tr></thead><tbody><tr><th scope="row">Baseline</th><td><strong>19</strong> / 21</td><td>Existing stock and receipts</td></tr><tr><th scope="row">Disruption</th><td><strong>18</strong> / 21</td><td>S-04 planned dispatches delayed</td></tr><tr class="mitigation-row"><th scope="row">Mitigation</th><td><strong>20</strong> / 21</td><td>Feasible additional proposals</td></tr></tbody></table></div>
+          <p>O-105 and O-106 become newly at risk and are restored by the selected recovery. Its four proposed shipments add 132 material units, costing <strong>1,364.00 synthetic cost units</strong>. Decimal arithmetic multiplies graph prices by quantities and rounds each shipment to two places. This is gross additional procurement, excluding existing commitments, cancellation fees, transport, tax and labor.</p>
+          <p>Why does mitigation exceed baseline coverage? Complete-order allocation changes how shared materials are consumed; recovery can also resolve a pre-existing shortfall. The comparison tracks newly-at-risk orders separately instead of attributing every failure to S-04.</p>
+          <p class="editor-note"><strong>Read the result carefully.</strong> These are synthetic material-coverage estimates. They are neither delivery guarantees nor real prices, and the proposed shipments are not purchases.</p>
+        </section>
+
+        <section id="certification" aria-labelledby="certification-title">
+          <p class="section-kicker">04 / Eligibility has a date</p>
+          <h2 id="certification-title">When the cheapest alternative cannot be used</h2>
+          <p>S-10 offers a cheaper P-22 alternative, but lacks required certificate C-02. S-09 holds the required C-01 and C-02 through its modeled arrival and qualifies. For P-12, however, S-10’s C-01 can satisfy that part’s requirements. A supplier-wide “approved” badge would conceal this distinction.</p>
+          <p>The engine follows <code>REQUIRES_CERT</code> and <code>HOLDS_CERT</code> evidence and compares each expiry with the proposed arrival, inclusively. A certificate valid today can fail a later delivery. Cost ranking happens inside the feasible set; a lower price cannot excuse a missing or expired requirement.</p>
+        </section>
+
+        <section id="mcp" aria-labelledby="mcp-title">
+          <p class="section-kicker">05 / Make execution inspectable</p>
+          <h2 id="mcp-title">MCP tools, without overstating autonomy</h2>
+          <p>The application exposes six constrained, read-only tools over the genuine MCP SDK’s stdio client/server transport:</p>
+          <ul class="tool-list"><li><code>graph_summary</code></li><li><code>trace_supplier_impact</code></li><li><code>evaluate_part_alternatives</code></li><li><code>simulate_supply_disruption</code></li><li><code>get_decision_history</code></li><li><code>resolve_evidence</code></li></ul>
+          <p>The coordinator bounds turns, calls, time and payload sizes. It validates scenario arguments and source revisions, resolves citations, and renders numeric conclusions from verified tool facts. The tool surface offers no unrestricted Cypher, approval or purchasing operation. Visible traces expose arguments, evidence references and output hashes.</p>
+          <p>The recorded demonstration uses <strong>deterministic Guided MCP mode</strong>: a fixed sequence invokes real FalkorDB-backed tools with <strong>zero remote LLM calls</strong>. Optional bounded model orchestration is implemented and tested with controlled providers, but <strong>remote LLM acceptance has not been performed</strong>. That walkthrough demonstrates connected execution, not independently verified autonomous reasoning.</p>
+        </section>
+
+        <figure class="screenshot wide-figure"><a href="assets/guided-mcp.png" aria-label="Open the full-size authentic Guided MCP screenshot"><img src="assets/guided-mcp.png" width="1440" height="1100" loading="lazy" decoding="async" alt="Actual Guided MCP view explicitly labeled as a deterministic walkthrough with zero model calls, showing graph-backed execution steps and the computed recovery cost."></a><figcaption><span class="caption-number">03</span> Genuine MCP execution, explicitly labeled. The local capture shows tool steps and computed results; its deterministic sequence is not a remote-agent acceptance trace. <a href="assets/guided-mcp.png">Open full size</a>.</figcaption></figure>
+
+        <section id="human" aria-labelledby="human-title">
+          <p class="section-kicker">06 / Separate recommendation from authority</p>
+          <h2 id="human-title">Human decisions stay human</h2>
+          <p>Preparing a mitigation preview is read-only. It recalculates quantities, arrivals, certification checks and costs from fresh graph facts, then fingerprints the source and complete plan. Internal approval requires explicit human confirmation and a separate credential. Changed source or intent conflicts; an identical idempotent retry retrieves the original decision.</p>
+          <p>The guarded write stores Decision and Evidence nodes with selected suppliers, affected orders and an archived operational snapshot inside FalkorDB. Operational fingerprints exclude memory records, so recording a decision does not itself change the scenario. This makes later inspection possible without claiming that historical evidence is current. Internal approval executes no procurement, reserves no stock and contacts no vendor.</p>
+        </section>
+
+        <section id="lessons" aria-labelledby="lessons-title">
+          <p class="section-kicker">07 / Test the boundary</p>
+          <h2 id="lessons-title">What building it taught us</h2>
+          <p>The useful tests challenge the boundaries between facts and conclusions. Path tests preserve edge direction. Allocation tests prevent double counting. Arrival-date tests reject certificates that expire in transit. Fingerprint tests keep decision memory from invalidating unchanged operational facts.</p>
+          <p>The <a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/docs/TESTING.md">documented release verification</a> passed <strong>209 backend tests, including 79 real FalkorDB integration tests</strong>, plus <strong>51 frontend component tests and 17 browser scenarios</strong>. A source-only clean installation used an isolated Docker graph and checked idempotent initialization, MCP, persistence, outage recovery and the browser walkthrough. These are correctness checks, not performance benchmarks.</p>
+          <p>Disconnecting that isolated database produced explicit failures, then reproducible results after recovery. Fail-closed behavior matters: a plausible answer from a hidden fixture would defeat the point of connected evidence. Deterministic math makes results reproducible; tool traces make their execution inspectable.</p>
+        </section>
+
+        <section id="unfinished" aria-labelledby="unfinished-title">
+          <p class="section-kicker">08 / Keep the claims bounded</p>
+          <h2 id="unfinished-title">What remains unfinished</h2>
+          <p>The planner compares bounded greedy policies, not a global optimum. Material coverage omits factory scheduling and production capacity. The one-worker localhost security model is not ready for public application hosting; its approval lock cannot isolate external graph writers. Remote LLM acceptance remains unverified. These limits belong alongside the result, not behind it.</p>
+          <p class="closing">The graph tells us how an outage connects to an order. The allocator tells us whether the material runs out. A useful explanation needs both—and a clear boundary around who can act on the answer.</p>
+          <p>Read the implementation and try the reproducible local demo. O-101 is a good place to start: follow the arrows, calculate the 32 units, then ask where the coverage comes from.</p>
+        </section>
+
+        <footer class="article-footer">
+          <div class="reading-links"><a class="primary-link" href="https://github.com/HIZMALI/rippleproof-ai">Explore the source <span aria-hidden="true">↗</span></a><a href="https://youtu.be/ttOWMdWxIPU">Watch the three-minute demo <span aria-hidden="true">↗</span></a></div>
+          <div class="source-note"><p class="eyebrow">Source &amp; provenance</p><p>Based on the verified <a href="https://github.com/HIZMALI/rippleproof-ai/tree/3851bc365dcee175ae0098275004ff780dfe8f80">383-file main snapshot</a>. Consult the <a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/docs/GRAPH_MODEL.md">graph model</a>, <a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/docs/CYPHER_AND_EVIDENCE.md">queries and algorithms</a>, and <a href="https://github.com/HIZMALI/rippleproof-ai/blob/main/docs/SECURITY.md">security boundaries</a>. Screenshots are authentic local captures from that source. This page is an article; the application runs locally.</p></div>
+          <div class="disclosure"><p class="eyebrow">AI assistance disclosure</p><p>OpenAI Codex assisted with implementation, testing and technical documentation, including preparation of this article. The participant directed the project scope and remains responsible for technical understanding and review.</p></div>
+        </footer>
+      </div>
+    </div>
+  </article>
+</main>
+<footer class="site-footer shell"><p>Copyright © 2026 Mert Hızmalı. All rights reserved.</p><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
+</body>
+</html>
